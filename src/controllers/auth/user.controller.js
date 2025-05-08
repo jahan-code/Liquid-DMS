@@ -90,7 +90,7 @@ user.signIn = async (req, res, next) => {
         message: 'Login succeed.',
         data: {
             userID: existing.userID,
-            name: existing.name,
+            name: existing.fullname,
             email: existing.email,
         },
     });
@@ -128,7 +128,7 @@ user.sendVerifyOtp = async (req, res, next) => {
                 code: 200,
                 message: "Account already verified!.",
                 data: {
-                    name: user.name,
+                    name: user.fullname,
                     email: user.email,
                 }
             });
@@ -137,6 +137,8 @@ user.sendVerifyOtp = async (req, res, next) => {
         user.Otp = otp;
         user.ExpireAt = Date.now() + 2 * 60 * 1000;
         await user.save();
+        const expiresAt = new Date(user.ExpireAt).toLocaleTimeString();
+
         const mailOptions = {
             from: process.env.SENDER_EMAIL, // your Webmail sender address
             to: user.email, // recipient's email
@@ -147,7 +149,7 @@ user.sendVerifyOtp = async (req, res, next) => {
                 <p>Hello,</p>
                 <p>Use the following 4-digit OTP to complete your action:</p>
                 <h3 style="background: #f0f0f0; padding: 10px; width: fit-content;">${otp}</h3>
-                <p>This OTP is valid until <strong></strong> (2 minutes from now).</p>
+                <p>This OTP is valid until <strong>${expiresAt}</strong> (2 minutes from now).</p>
                 <p>If you didn’t request this, please ignore this email.</p>
                 <br/>
                 <p>Thanks,<br/>The Qubitars Team</p>
@@ -206,7 +208,7 @@ user.verifyOtp = async (req, res, next) => {
             message: "Account verified successfully.",
             data: {
                 userID: user.userID,
-                name: user.name,
+                name: user.fullname,
                 email: user.email,
             },
         });
@@ -225,13 +227,13 @@ user.forgetPassword = async (req, res, next) => {
             return next(errorResponse(USER_NOT_FOUND));
         }
 
-        // Generate 8-digit OTP
+        // Generate 4-digit OTP
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         user.Otp = otp;
-        user.ExpireAt = Date.now() + 2 * 60 * 1000; // 30 minutes from now
+        user.ExpireAt = Date.now() + 2 * 60 * 1000; // 2 minutes from now
 
         await user.save();
-
+        const expiresAt = new Date(user.ExpireAt).toLocaleTimeString();
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
@@ -242,7 +244,7 @@ user.forgetPassword = async (req, res, next) => {
                     <p>Hello <strong>${user.email}</strong>,</p>
                     <p>Use the following OTP to reset your password:</p>
                     <h3 style="background: #f0f0f0; padding: 10px; width: fit-content;">${otp}</h3>
-                    <p>This OTP is valid for 2 minutes.</p>
+                    <p>This OTP is valid until <strong>${expiresAt}</strong> (2 minutes from now).</p>
                     <p>If you didn't request a password reset, you can safely ignore this email.</p>
                     <br/>
                     <p>Thanks,<br/>The Full-AUTH Team</p>

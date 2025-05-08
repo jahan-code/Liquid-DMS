@@ -14,7 +14,7 @@ exports.user = {
     ].join('')]: {
         [POST]: Joi.object({
             fullname: Joi.string().required(),
-            email: Joi.string().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
             password: Joi.string().required()
         }),
     },
@@ -26,7 +26,7 @@ exports.user = {
         v1.routes.user.subPaths.signIn,
     ].join('')]: {
         [POST]: Joi.object({
-            email: Joi.string().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
             password: Joi.string().required(),
         }),
     },
@@ -47,7 +47,7 @@ exports.user = {
         v1.routes.user.subPaths.sendVerifyOtp,
     ].join('')]: {
         [POST]: Joi.object({
-            email: Joi.string().email().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
         }),
     },
     [[
@@ -58,7 +58,7 @@ exports.user = {
         v1.routes.user.subPaths.verifyOtp,
     ].join('')]: {
         [POST]: Joi.object({
-            email: Joi.string().email().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
             otp: Joi.string().length(4).required(),
         }),
     },
@@ -70,7 +70,7 @@ exports.user = {
         v1.routes.user.subPaths.forgetPassword,
     ].join('')]: {
         [POST]: Joi.object({
-            email: Joi.string().email().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
         }),
     },
     [[
@@ -81,7 +81,7 @@ exports.user = {
         v1.routes.user.subPaths.resetPassword,
     ].join('')]: {
         [POST]: Joi.object({
-            email: Joi.string().email().required(),
+            email: Joi.string().email({ tlds: { allow: false } }).required(),
             newPassword: Joi.string().required()
         }),
     },

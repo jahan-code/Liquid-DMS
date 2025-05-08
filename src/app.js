@@ -17,7 +17,10 @@ const router = require('./routes');
 const { randomConstant } = require('./constants/random.contants');
 const { PORT } = randomConstant;
 const server = http.createServer(app);
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 app.get('/', (req, res) => {
     res.send('hello world');
